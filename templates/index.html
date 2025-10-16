@@ -9,13 +9,20 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <h1 class="nav-title">CircularTime</h1>
+            <h1 class="nav-title">
+                CircularTime
+                <span class="title-subtitle">Reloj Digital Mundial</span>
+            </h1>
             <div class="nav-tabs">
                 <button class="nav-tab active" data-tab="clock">Reloj</button>
                 <button class="nav-tab" data-tab="stopwatch">Cronómetro</button>
                 <button class="nav-tab" data-tab="timer">Temporizador</button>
             </div>
-            <button class="settings-btn" id="settingsBtn">⚙️</button>
+            <button class="settings-btn" id="settingsBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 0 0-2.282.819l-.922 1.597a1.875 1.875 0 0 0 .432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 0 0 0 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 0 0-.432 2.385l.922 1.597a1.875 1.875 0 0 0 2.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 0 0 2.28-.819l.923-1.597a1.875 1.875 0 0 0-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 0 0 0-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 0 0-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 0 0-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 0 0-1.85-1.567h-1.843ZM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -28,7 +35,30 @@
                     <div class="clock-label">Hora Local</div>
                 </div>
                 <div class="additional-clocks" id="additionalClocks"></div>
-                <button class="add-clock-btn" id="addClockBtn">Agregar Reloj</button>
+                <div class="clock-actions">
+                    <button class="add-clock-btn" id="addClockBtn">🌍 Agregar Ciudad</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal Quitar Reloj -->
+        <div class="modal" id="removeClockModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Quitar Reloj</h2>
+                    <button class="close-btn" id="closeRemoveClock">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Qué reloj deseas quitar?</p>
+                    <div class="clock-list" id="clockList"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" id="cancelRemoveClock">Cancelar</button>
+                    <button class="btn danger" id="confirmRemoveClock" disabled>Quitar</button>
+                </div>
+            </div>
+        </div>
+    </main>
             </div>
         </section>
 
@@ -93,10 +123,22 @@
                     <select id="timezoneSelect">
                         <option value="America/Bogota">Bogotá (GMT-5)</option>
                         <option value="America/New_York">Nueva York (GMT-5/-4)</option>
+                        <option value="America/Los_Angeles">Los Ángeles (GMT-8/-7)</option>
+                        <option value="America/Mexico_City">Ciudad de México (GMT-6/-5)</option>
+                        <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
                         <option value="Europe/London">Londres (GMT+0/+1)</option>
                         <option value="Europe/Paris">París (GMT+1/+2)</option>
+                        <option value="Europe/Madrid">Madrid (GMT+1/+2)</option>
+                        <option value="Europe/Berlin">Berlín (GMT+1/+2)</option>
+                        <option value="Europe/Rome">Roma (GMT+1/+2)</option>
+                        <option value="Asia/Dubai">Dubái (GMT+4)</option>
+                        <option value="Asia/Kolkata">Nueva Delhi (GMT+5:30)</option>
+                        <option value="Asia/Shanghai">Shanghái (GMT+8)</option>
                         <option value="Asia/Tokyo">Tokio (GMT+9)</option>
+                        <option value="Asia/Seoul">Seúl (GMT+9)</option>
                         <option value="Australia/Sydney">Sídney (GMT+10/+11)</option>
+                        <option value="Australia/Melbourne">Melbourne (GMT+10/+11)</option>
+                        <option value="Pacific/Auckland">Auckland (GMT+12/+13)</option>
                         <option value="UTC">UTC</option>
                     </select>
                 </div>
@@ -126,33 +168,53 @@
     <div class="modal" id="addClockModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Agregar Reloj</h2>
+                <h2>🌍 Agregar Ciudad del Mundo</h2>
                 <button class="close-btn" id="closeAddClock">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="setting-group">
-                    <label for="addTimezoneSelect">Zona Horaria:</label>
+                    <label for="addTimezoneSelect">Selecciona una ciudad:</label>
                     <select id="addTimezoneSelect">
-                        <option value="America/Bogota">Bogotá (GMT-5)</option>
-                        <option value="America/New_York">Nueva York (GMT-5/-4)</option>
-                        <option value="Europe/London">Londres (GMT+0/+1)</option>
-                        <option value="Europe/Paris">París (GMT+1/+2)</option>
-                        <option value="Asia/Tokyo">Tokio (GMT+9)</option>
-                        <option value="Australia/Sydney">Sídney (GMT+10/+11)</option>
-                        <option value="UTC">UTC</option>
+                        <optgroup label="🌎 América">
+                            <option value="America/Bogota">🇨🇴 Bogotá, Colombia</option>
+                            <option value="America/New_York">🇺🇸 Nueva York, EE.UU.</option>
+                            <option value="America/Los_Angeles">🇺🇸 Los Ángeles, EE.UU.</option>
+                            <option value="America/Mexico_City">🇲🇽 Ciudad de México, México</option>
+                            <option value="America/Sao_Paulo">🇧🇷 São Paulo, Brasil</option>
+                            <option value="America/Argentina/Buenos_Aires">🇦🇷 Buenos Aires, Argentina</option>
+                            <option value="America/Lima">🇵🇪 Lima, Perú</option>
+                        </optgroup>
+                        <optgroup label="🇪🇺 Europa">
+                            <option value="Europe/London">🇬🇧 Londres, Reino Unido</option>
+                            <option value="Europe/Paris">🇫🇷 París, Francia</option>
+                            <option value="Europe/Madrid">🇪🇸 Madrid, España</option>
+                            <option value="Europe/Berlin">🇩🇪 Berlín, Alemania</option>
+                            <option value="Europe/Rome">🇮🇹 Roma, Italia</option>
+                            <option value="Europe/Moscow">🇷🇺 Moscú, Rusia</option>
+                        </optgroup>
+                        <optgroup label="🌏 Asia">
+                            <option value="Asia/Dubai">🇦🇪 Dubái, Emiratos Árabes</option>
+                            <option value="Asia/Kolkata">🇮🇳 Nueva Delhi, India</option>
+                            <option value="Asia/Shanghai">🇨🇳 Shanghái, China</option>
+                            <option value="Asia/Tokyo">🇯🇵 Tokio, Japón</option>
+                            <option value="Asia/Seoul">🇰🇷 Seúl, Corea del Sur</option>
+                            <option value="Asia/Bangkok">🇹🇭 Bangkok, Tailandia</option>
+                        </optgroup>
+                        <optgroup label="🇦🇺 Oceanía">
+                            <option value="Australia/Sydney">🇦🇺 Sídney, Australia</option>
+                            <option value="Australia/Melbourne">🇦🇺 Melbourne, Australia</option>
+                            <option value="Pacific/Auckland">🇳🇿 Auckland, Nueva Zelanda</option>
+                        </optgroup>
+                        <optgroup label="🌍 Otros">
+                            <option value="UTC">🌍 UTC (Tiempo Universal)</option>
+                        </optgroup>
                     </select>
                 </div>
-                <div class="setting-group">
-                    <label for="addFormatToggle">Formato 24H:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="addFormatToggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
+                <p class="format-note">💡 El formato de hora (12H/24H) se configura globalmente en Configuración</p>
             </div>
             <div class="modal-footer">
-                <button class="btn secondary" id="cancelAddClock">Cancelar</button>
-                <button class="btn primary" id="saveAddClock">Agregar</button>
+                <button class="btn secondary" id="cancelAddClock">❌ Cancelar</button>
+                <button class="btn primary" id="saveAddClock">✅ Agregar Ciudad</button>
             </div>
         </div>
     </div>

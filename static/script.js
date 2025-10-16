@@ -164,7 +164,6 @@ function toggleTheme() {
 // Relojes adicionales
 function addClockHandler() {
     const timezone = document.getElementById('addTimezoneSelect').value;
-    const format24h = document.getElementById('addFormatToggle').checked;
 
     fetch('/api/agregar_reloj', {
         method: 'POST',
@@ -172,8 +171,7 @@ function addClockHandler() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            zona_horaria: timezone,
-            formato_24h: format24h
+            zona_horaria: timezone
         })
     })
     .then(response => response.json())
@@ -191,6 +189,7 @@ function renderAdditionalClock(hora, zona, indice) {
     clockElement.className = 'additional-clock';
     clockElement.id = `additional-clock-${indice}`;
     clockElement.innerHTML = `
+        <button class="remove-clock-btn" onclick="removeClock(${indice})" title="Quitar reloj">×</button>
         <div class="clock-display">${hora}</div>
         <div class="clock-label">${zona.split('/').pop().replace('_', ' ')}</div>
     `;
@@ -208,6 +207,16 @@ function updateAdditionalClocks() {
     fetch('/api/horas_adicionales')
         .then(response => response.json())
         .then(data => {
+            // Limpiar relojes que ya no existen
+            additionalClocks = additionalClocks.filter((clock, index) => {
+                if (!data.horas[index]) {
+                    clock.element.remove();
+                    return false;
+                }
+                return true;
+            });
+
+            // Actualizar los relojes restantes
             additionalClocks.forEach((clock, index) => {
                 if (data.horas[index]) {
                     clock.element.querySelector('.clock-display').textContent = data.horas[index];
@@ -215,6 +224,31 @@ function updateAdditionalClocks() {
             });
         })
         .catch(error => console.error('Error al actualizar relojes adicionales:', error));
+}
+
+function removeClock(index) {
+    if (confirm('¿Estás seguro de que quieres quitar este reloj?')) {
+        fetch(`/api/quitar_reloj/${index}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remover el elemento del DOM
+                    const clockElement = document.getElementById(`additional-clock-${index}`);
+                    if (clockElement) {
+                        clockElement.remove();
+                    }
+                    // Remover de la lista local
+                    additionalClocks = additionalClocks.filter(clock => clock.indice !== index);
+                    // Reindexar los relojes restantes
+                    additionalClocks.forEach((clock, i) => {
+                        clock.indice = i;
+                        clock.element.id = `additional-clock-${i}`;
+                        clock.element.querySelector('.remove-clock-btn').onclick = () => removeClock(i);
+                    });
+                }
+            })
+            .catch(error => console.error('Error al quitar reloj:', error));
+    }
 }
 
 // Cronómetro

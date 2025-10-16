@@ -13,7 +13,7 @@ class Reloj:
         if self.formato_24h:
             return ahora.strftime("%H:%M:%S")
         else:
-            return ahora.strftime("%I:%M:%S %p")
+            return ahora.strftime("%I:%M:%S %p").lower()
 
 class Cronometro:
     def __init__(self):
