@@ -108,10 +108,10 @@ def temporizador_establecer():
 
 @app.route('/api/temporizador/iniciar', methods=['POST'])
 def temporizador_iniciar():
-    # No iniciar si el tiempo es 00:00:00
+    # No iniciar si el tiempo es 00:00:00 (solo no hacer nada, sin mensaje)
     tiempo_total_segundos = temporizador.tiempo_restante.total_seconds()
     if tiempo_total_segundos <= 0:
-        return jsonify({'success': False, 'message': 'No se puede iniciar temporizador con tiempo 00:00:00'})
+        return jsonify({'success': False})
 
     temporizador.iniciar()
     return jsonify({'success': True})

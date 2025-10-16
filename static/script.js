@@ -332,9 +332,8 @@ function startTimer() {
                 document.getElementById('timerRunning').style.display = 'block';
                 updateTimer();
                 timerInterval = setInterval(updateTimer, 1000); // Cambiar a 1000ms (1 segundo)
-            } else {
-                alert(data.message || 'No se puede iniciar el temporizador');
             }
+            // Si no es exitoso, no hacer nada (sin alert)
         })
         .catch(error => console.error('Error al iniciar temporizador:', error));
 }
@@ -343,6 +342,9 @@ function stopTimer() {
     fetch('/api/temporizador/detener', { method: 'POST' })
         .then(() => {
             clearInterval(timerInterval);
+            // Volver a la vista de configuración
+            document.getElementById('timerSetup').style.display = 'block';
+            document.getElementById('timerRunning').style.display = 'none';
             updateTimer(); // Actualizar una vez más para mostrar el tiempo restante
         })
         .catch(error => console.error('Error al detener temporizador:', error));
