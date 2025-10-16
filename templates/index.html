@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircularTime - Reloj Digital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">CircularTime</h1>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="clock">Reloj</button>
+                <button class="nav-tab" data-tab="stopwatch">Cronómetro</button>
+                <button class="nav-tab" data-tab="timer">Temporizador</button>
+            </div>
+            <button class="settings-btn" id="settingsBtn">⚙️</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Vista Reloj -->
+        <section id="clock-view" class="view active">
+            <div class="clock-container">
+                <div class="main-clock">
+                    <div class="clock-display" id="mainClock">00:00:00</div>
+                    <div class="clock-label">Hora Local</div>
+                </div>
+                <div class="additional-clocks" id="additionalClocks"></div>
+                <button class="add-clock-btn" id="addClockBtn">Agregar Reloj</button>
+            </div>
+        </section>
+
+        <!-- Vista Cronómetro -->
+        <section id="stopwatch-view" class="view">
+            <div class="stopwatch-container">
+                <div class="stopwatch-display" id="stopwatchDisplay">00:00:00.00</div>
+                <div class="stopwatch-controls">
+                    <button class="control-btn start-btn" id="startStopwatch">Iniciar</button>
+                    <button class="control-btn stop-btn" id="stopStopwatch">Detener</button>
+                    <button class="control-btn reset-btn" id="resetStopwatch">Resetear</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista Temporizador -->
+        <section id="timer-view" class="view">
+            <div class="timer-container">
+                <div class="timer-setup" id="timerSetup">
+                    <div class="time-inputs">
+                        <div class="time-input-group">
+                            <input type="number" id="hoursInput" min="0" max="23" value="0" class="time-input">
+                            <label class="input-label">Horas</label>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-input-group">
+                            <input type="number" id="minutesInput" min="0" max="59" value="0" class="time-input">
+                            <label class="input-label">Minutos</label>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-input-group">
+                            <input type="number" id="secondsInput" min="0" max="59" value="0" class="time-input">
+                            <label class="input-label">Segundos</label>
+                        </div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="control-btn start-btn" id="startTimer">Iniciar</button>
+                        <button class="control-btn reset-btn" id="resetTimer">Resetear</button>
+                    </div>
+                </div>
+                <div class="timer-running" id="timerRunning" style="display: none;">
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="timer-controls">
+                        <button class="control-btn stop-btn" id="stopTimer">Detener</button>
+                        <button class="control-btn reset-btn" id="resetTimerRunning">Resetear</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Configuración -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configuración</h2>
+                <button class="close-btn" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="timezoneSelect">Zona Horaria:</label>
+                    <select id="timezoneSelect">
+                        <option value="America/Bogota">Bogotá (GMT-5)</option>
+                        <option value="America/New_York">Nueva York (GMT-5/-4)</option>
+                        <option value="Europe/London">Londres (GMT+0/+1)</option>
+                        <option value="Europe/Paris">París (GMT+1/+2)</option>
+                        <option value="Asia/Tokyo">Tokio (GMT+9)</option>
+                        <option value="Australia/Sydney">Sídney (GMT+10/+11)</option>
+                        <option value="UTC">UTC</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="formatToggle">Formato 24H:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="formatToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label for="themeToggle">Tema Oscuro:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="cancelSettings">Cancelar</button>
+                <button class="btn primary" id="saveSettings">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Reloj -->
+    <div class="modal" id="addClockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Reloj</h2>
+                <button class="close-btn" id="closeAddClock">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="addTimezoneSelect">Zona Horaria:</label>
+                    <select id="addTimezoneSelect">
+                        <option value="America/Bogota">Bogotá (GMT-5)</option>
+                        <option value="America/New_York">Nueva York (GMT-5/-4)</option>
+                        <option value="Europe/London">Londres (GMT+0/+1)</option>
+                        <option value="Europe/Paris">París (GMT+1/+2)</option>
+                        <option value="Asia/Tokyo">Tokio (GMT+9)</option>
+                        <option value="Australia/Sydney">Sídney (GMT+10/+11)</option>
+                        <option value="UTC">UTC</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="addFormatToggle">Formato 24H:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="addFormatToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="cancelAddClock">Cancelar</button>
+                <button class="btn primary" id="saveAddClock">Agregar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Temporizador Terminado -->
+    <div class="modal" id="timerFinishedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>¡Tiempo terminado!</h2>
+            </div>
+            <div class="modal-body">
+                <p>El temporizador ha llegado a cero.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary" id="closeTimerFinished">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
